@@ -9,61 +9,185 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
+import { Route as LayoutTrustRouteImport } from './routes/_layout.trust'
+import { Route as LayoutOpportunitiesRouteImport } from './routes/_layout.opportunities'
+import { Route as LayoutKnowledgeRouteImport } from './routes/_layout.knowledge'
+import { Route as LayoutFundingRouteImport } from './routes/_layout.funding'
 
-const IndexRoute = IndexRouteImport.update({
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LayoutRoute = LayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutTrustRoute = LayoutTrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutOpportunitiesRoute = LayoutOpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutKnowledgeRoute = LayoutKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutFundingRoute = LayoutFundingRouteImport.update({
+  id: '/funding',
+  path: '/funding',
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof LayoutIndexRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/funding': typeof LayoutFundingRoute
+  '/knowledge': typeof LayoutKnowledgeRoute
+  '/opportunities': typeof LayoutOpportunitiesRoute
+  '/trust': typeof LayoutTrustRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/funding': typeof LayoutFundingRoute
+  '/knowledge': typeof LayoutKnowledgeRoute
+  '/opportunities': typeof LayoutOpportunitiesRoute
+  '/trust': typeof LayoutTrustRoute
+  '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_layout': typeof LayoutRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_layout/funding': typeof LayoutFundingRoute
+  '/_layout/knowledge': typeof LayoutKnowledgeRoute
+  '/_layout/opportunities': typeof LayoutOpportunitiesRoute
+  '/_layout/trust': typeof LayoutTrustRoute
+  '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/sitemap.xml'
+    | '/funding'
+    | '/knowledge'
+    | '/opportunities'
+    | '/trust'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/sitemap.xml'
+    | '/funding'
+    | '/knowledge'
+    | '/opportunities'
+    | '/trust'
+    | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/sitemap.xml'
+    | '/_layout/funding'
+    | '/_layout/knowledge'
+    | '/_layout/opportunities'
+    | '/_layout/trust'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_layout/': {
+      id: '/_layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof LayoutIndexRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/trust': {
+      id: '/_layout/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof LayoutTrustRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/opportunities': {
+      id: '/_layout/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof LayoutOpportunitiesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/knowledge': {
+      id: '/_layout/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof LayoutKnowledgeRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/funding': {
+      id: '/_layout/funding'
+      path: '/funding'
+      fullPath: '/funding'
+      preLoaderRoute: typeof LayoutFundingRouteImport
+      parentRoute: typeof LayoutRoute
     }
   }
 }
 
+interface LayoutRouteChildren {
+  LayoutFundingRoute: typeof LayoutFundingRoute
+  LayoutKnowledgeRoute: typeof LayoutKnowledgeRoute
+  LayoutOpportunitiesRoute: typeof LayoutOpportunitiesRoute
+  LayoutTrustRoute: typeof LayoutTrustRoute
+  LayoutIndexRoute: typeof LayoutIndexRoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutFundingRoute: LayoutFundingRoute,
+  LayoutKnowledgeRoute: LayoutKnowledgeRoute,
+  LayoutOpportunitiesRoute: LayoutOpportunitiesRoute,
+  LayoutTrustRoute: LayoutTrustRoute,
+  LayoutIndexRoute: LayoutIndexRoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  LayoutRoute: LayoutRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
