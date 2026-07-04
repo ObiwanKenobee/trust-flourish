@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
 import { Route as LayoutTrustRouteImport } from './routes/_layout.trust'
@@ -16,6 +17,11 @@ import { Route as LayoutOpportunitiesRouteImport } from './routes/_layout.opport
 import { Route as LayoutKnowledgeRouteImport } from './routes/_layout.knowledge'
 import { Route as LayoutFundingRouteImport } from './routes/_layout.funding'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
@@ -48,12 +54,14 @@ const LayoutFundingRoute = LayoutFundingRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/funding': typeof LayoutFundingRoute
   '/knowledge': typeof LayoutKnowledgeRoute
   '/opportunities': typeof LayoutOpportunitiesRoute
   '/trust': typeof LayoutTrustRoute
 }
 export interface FileRoutesByTo {
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/funding': typeof LayoutFundingRoute
   '/knowledge': typeof LayoutKnowledgeRoute
   '/opportunities': typeof LayoutOpportunitiesRoute
@@ -63,6 +71,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_layout/funding': typeof LayoutFundingRoute
   '/_layout/knowledge': typeof LayoutKnowledgeRoute
   '/_layout/opportunities': typeof LayoutOpportunitiesRoute
@@ -71,12 +80,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/funding' | '/knowledge' | '/opportunities' | '/trust'
+  fullPaths:
+    | '/'
+    | '/sitemap.xml'
+    | '/funding'
+    | '/knowledge'
+    | '/opportunities'
+    | '/trust'
   fileRoutesByTo: FileRoutesByTo
-  to: '/funding' | '/knowledge' | '/opportunities' | '/trust' | '/'
+  to:
+    | '/sitemap.xml'
+    | '/funding'
+    | '/knowledge'
+    | '/opportunities'
+    | '/trust'
+    | '/'
   id:
     | '__root__'
     | '/_layout'
+    | '/sitemap.xml'
     | '/_layout/funding'
     | '/_layout/knowledge'
     | '/_layout/opportunities'
@@ -86,10 +108,18 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_layout': {
       id: '/_layout'
       path: ''
@@ -156,17 +186,8 @@ const LayoutRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
