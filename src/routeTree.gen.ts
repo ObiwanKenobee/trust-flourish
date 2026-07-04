@@ -10,32 +10,82 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
+import { Route as LayoutTrustRouteImport } from './routes/_layout.trust'
+import { Route as LayoutOpportunitiesRouteImport } from './routes/_layout.opportunities'
+import { Route as LayoutKnowledgeRouteImport } from './routes/_layout.knowledge'
+import { Route as LayoutFundingRouteImport } from './routes/_layout.funding'
 
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LayoutIndexRoute = LayoutIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutTrustRoute = LayoutTrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutOpportunitiesRoute = LayoutOpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutKnowledgeRoute = LayoutKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutFundingRoute = LayoutFundingRouteImport.update({
+  id: '/funding',
+  path: '/funding',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutRoute
+  '/': typeof LayoutIndexRoute
+  '/funding': typeof LayoutFundingRoute
+  '/knowledge': typeof LayoutKnowledgeRoute
+  '/opportunities': typeof LayoutOpportunitiesRoute
+  '/trust': typeof LayoutTrustRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof LayoutRoute
+  '/funding': typeof LayoutFundingRoute
+  '/knowledge': typeof LayoutKnowledgeRoute
+  '/opportunities': typeof LayoutOpportunitiesRoute
+  '/trust': typeof LayoutTrustRoute
+  '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_layout': typeof LayoutRoute
+  '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/funding': typeof LayoutFundingRoute
+  '/_layout/knowledge': typeof LayoutKnowledgeRoute
+  '/_layout/opportunities': typeof LayoutOpportunitiesRoute
+  '/_layout/trust': typeof LayoutTrustRoute
+  '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/funding' | '/knowledge' | '/opportunities' | '/trust'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_layout'
+  to: '/funding' | '/knowledge' | '/opportunities' | '/trust' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/funding'
+    | '/_layout/knowledge'
+    | '/_layout/opportunities'
+    | '/_layout/trust'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -47,12 +97,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_layout/': {
+      id: '/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutIndexRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/trust': {
+      id: '/_layout/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof LayoutTrustRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/opportunities': {
+      id: '/_layout/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof LayoutOpportunitiesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/knowledge': {
+      id: '/_layout/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof LayoutKnowledgeRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/funding': {
+      id: '/_layout/funding'
+      path: '/funding'
+      fullPath: '/funding'
+      preLoaderRoute: typeof LayoutFundingRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
+interface LayoutRouteChildren {
+  LayoutFundingRoute: typeof LayoutFundingRoute
+  LayoutKnowledgeRoute: typeof LayoutKnowledgeRoute
+  LayoutOpportunitiesRoute: typeof LayoutOpportunitiesRoute
+  LayoutTrustRoute: typeof LayoutTrustRoute
+  LayoutIndexRoute: typeof LayoutIndexRoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutFundingRoute: LayoutFundingRoute,
+  LayoutKnowledgeRoute: LayoutKnowledgeRoute,
+  LayoutOpportunitiesRoute: LayoutOpportunitiesRoute,
+  LayoutTrustRoute: LayoutTrustRoute,
+  LayoutIndexRoute: LayoutIndexRoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRoute: LayoutRoute,
+  LayoutRoute: LayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
